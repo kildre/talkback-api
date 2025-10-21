@@ -1,7 +1,7 @@
 [project]
-name = "comet-api"
+name = "chitchat-api"
 version = "1.0.0"
-description = "Python Fast API for the Comet Starter App"
+description = "Python Fast API for the ChitChat Starter App"
 readme = "README.md"
 license = {file = "LICENSE.md"}
 dependencies = [

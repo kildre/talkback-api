@@ -57,19 +57,19 @@ jobs:
       - name: Download OpenAPI spec
         run: |
           # Create docs directory if it doesn't exist
-          mkdir -p comet-api/docs
+          mkdir -p chitchat-api/docs
 
           # Download the OpenAPI spec
-          curl -o comet-api/docs/openapi.json http://localhost:5000/openapi.json
+          curl -o chitchat-api/docs/openapi.json http://localhost:5000/openapi.json
 
           # Verify the file was downloaded and is valid JSON
-          if [ ! -f "comet-api/docs/openapi.json" ]; then
+          if [ ! -f "chitchat-api/docs/openapi.json" ]; then
             echo "Error: Failed to download openapi.json"
             exit 1
           fi
 
           # Basic JSON validation
-          if ! python -m json.tool comet-api/docs/openapi.json > /dev/null; then
+          if ! python -m json.tool chitchat-api/docs/openapi.json > /dev/null; then
             echo "Error: Downloaded file is not valid JSON"
             exit 1
           fi
@@ -81,10 +81,10 @@ jobs:
 
       - name: Generate HTML documentation
         run: |
-          npx redoc-cli build comet-api/docs/openapi.json --output comet-api/docs/index.html
+          npx redoc-cli build chitchat-api/docs/openapi.json --output chitchat-api/docs/index.html
 
           # Verify HTML was generated
-          if [ ! -f "comet-api/docs/index.html" ]; then
+          if [ ! -f "chitchat-api/docs/index.html" ]; then
             echo "Error: Failed to generate HTML documentation"
             exit 1
           fi
@@ -95,7 +95,7 @@ jobs:
         id: check_changes
         run: |
           # Check if there are any changes to commit
-          if git diff --quiet comet-api/docs/; then
+          if git diff --quiet chitchat-api/docs/; then
             echo "No changes detected in documentation"
             echo "changes=false" >> $GITHUB_OUTPUT
           else
@@ -111,7 +111,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
           # Add and commit changes
-          git add comet-api/docs/openapi.json comet-api/docs/index.html
+          git add chitchat-api/docs/openapi.json chitchat-api/docs/index.html
           git commit -m "docs: update API documentation [automated]
 
           - Updated OpenAPI specification
@@ -137,4 +137,4 @@ jobs:
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Documentation URL:** [View Docs](https://your-username.github.io/your-repo/comet-api/docs/)" >> $GITHUB_STEP_SUMMARY
+          echo "**Documentation URL:** [View Docs](https://your-username.github.io/your-repo/chitchat-api/docs/)" >> $GITHUB_STEP_SUMMARY
