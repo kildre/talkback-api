@@ -14,21 +14,23 @@ The goal of this project is to provide a Python-based starter API, which comes p
 
 ## Table of Contents
 
-1. [Running the Project Locally](#running-the-project-locally)
-2. [Running with Docker](#running-with-docker)
-3. [Running Unit Tests](#running-unit-tests)
-4. [Running Code Quality Checks](#running-code-quality-checks)
-5. [Running Code Formatting](#running-code-formatting)
-6. [Publishing Updated Docs](#publishing-updated-docs)
-7. [Contributing](#contributing)
-8. [Next Steps](#next-steps)
+- [Welcome to the ChitChat API!](#welcome-to-the-chitchat-api)
+  - [Table of Contents](#table-of-contents)
+  - [Running the Project Locally](#running-the-project-locally)
+  - [Running with Docker](#running-with-docker)
+  - [Running Unit Tests](#running-unit-tests)
+  - [Running Code Quality Checks](#running-code-quality-checks)
+  - [Running Code Formatting](#running-code-formatting)
+  - [Publishing Updated Docs](#publishing-updated-docs)
+  - [Contributing](#contributing)
+  - [Next Steps](#next-steps)
 
 ## Running the Project Locally
 
 1. To create an environment, run the following:
 
 ```sh
-virtualenv -p python3 venv
+python3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -47,9 +49,9 @@ pip install -e ".[dev]"
 4. To override default environment variables, add a file called `.env` to the `chitchat-api` directory and update as needed (optional):
 
 ```
-API_PREFIX=[SOME_ROUTE] # Ex: '/api'
-DATABASE_URL=[SOME_URL] # Ex: 'postgresql://username:password@localhost:5432/database_name'
-OIDC_CONFIG_URL=[SOME_URL] # Ex: 'https://token.actions.githubusercontent.com/.well-known/openid-configuration'
+# API_PREFIX=/api # Uncomment and set if you want an API prefix
+# DATABASE_URL=postgresql://username:password@localhost:5432/database_name # Uncomment and set for external DB
+# OIDC_CONFIG_URL=https://token.actions.githubusercontent.com/.well-known/openid-configuration # Uncomment and set for JWT auth
 ```
 
 5. To start the app, run the following:
