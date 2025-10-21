@@ -1,6 +1,6 @@
-# Welcome to the Comet API!
+# Welcome to the ChitChat API!
 
-The goal of this project is to provide a Python-based starter API, which comes pre-configured with tools supporting the accelerated development of both Comet as well as general python APIs. Some of these tools are as follows:
+The goal of this project is to provide a Python-based starter API, which comes pre-configured with tools supporting the accelerated development of both ChitChat as well as general python APIs. Some of these tools are as follows:
 
 - Platform: Python
 - Web Framework: Fast API
@@ -44,7 +44,7 @@ pip install .
 pip install -e ".[dev]"
 ```
 
-4. To override default environment variables, add a file called `.env` to the `comet-api` directory and update as needed (optional):
+4. To override default environment variables, add a file called `.env` to the `chitchat-api` directory and update as needed (optional):
 
 ```
 API_PREFIX=[SOME_ROUTE] # Ex: '/api'
@@ -65,13 +65,13 @@ uvicorn app.main:app --reload --host=0.0.0.0 --port=5000
 1. To build the image, run the following:
 
 ```sh
-docker build . -t comet-api
+docker build . -t chitchat-api
 ```
 
 2. To run the container, run the following:
 
 ```sh
-docker run -p 5000:5000 --name comet-api comet-api
+docker run -p 5000:5000 --name chitchat-api chitchat-api
 ```
 
 3. Access the swagger docs by navigating to: `http://0.0.0.0:5000/docs`
@@ -112,7 +112,7 @@ ruff format .
 
 2. Click the Download button
 
-3. Copy the downloaded file into the `comet-api/docs` directory
+3. Copy the downloaded file into the `chitchat-api/docs` directory
 
 4. To convert the json into html, run the following:
 

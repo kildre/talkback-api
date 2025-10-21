@@ -1,4 +1,4 @@
-# Comet Starter API
+# ChitChat Starter API
 
 This project is a starter template for building web APIs using Python FastAPI.
 
