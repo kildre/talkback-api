@@ -62,7 +62,8 @@ def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:  # type: i
 
 @pytest.fixture(scope="function")
 def client(
-    app: FastAPI, db_session: SessionTesting  # type: ignore
+    app: FastAPI,
+    db_session: SessionTesting,  # type: ignore
 ) -> Generator[TestClient, Any, None]:
     """
     Create a new FastAPI TestClient that uses the `db_session` fixture to override
