@@ -1,7 +1,7 @@
 import requests
 from fastapi import Depends, HTTPException
+from jose import jwt
 from jose.backends import RSAKey
-from jose.jwt import decode, get_unverified_header
 
 from app.config import settings
 
@@ -17,7 +17,7 @@ def get_keycloak_jwks():
 
 
 def validate_jwt(token: str = Depends(get_keycloak_jwks)):
-    header = get_unverified_header(token)
+    header = jwt.get_unverified_header(token)
     jwks = get_keycloak_jwks()
 
     # Find the RSA key with the matching kid in the JWKS
@@ -33,7 +33,7 @@ def validate_jwt(token: str = Depends(get_keycloak_jwks)):
         raise HTTPException(status_code=401, detail="RSA Key not found in JWKS")
 
     try:
-        payload = decode(token, rsa_key, algorithms=[header["alg"]])
+        payload = jwt.decode(token, rsa_key, algorithms=[header["alg"]])
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid JWT token") from Exception
 
