@@ -6,6 +6,7 @@ readme = "README.md"
 license = {file = "LICENSE.md"}
 dependencies = [
   "alembic",
+  "boto3",
   "fastapi",
   "httpx",
   "pydantic-settings",
