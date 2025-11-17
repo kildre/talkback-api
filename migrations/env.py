@@ -3,8 +3,14 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.cases.models import DBCase
+from app.db import Base
 from app.config import settings
+
+# Import all models to ensure they are registered with Base.metadata
+from app.cases.models import DBCase  # noqa: F401
+from app.users.models import DBUser  # noqa: F401
+from app.applicants.models import DBApplicant  # noqa: F401
+from app.chat.models import Chat, Message  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -20,9 +26,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

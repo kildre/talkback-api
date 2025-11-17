@@ -1,0 +1,26 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "BedrockAccess",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:RetrieveAndGenerate",
+                "bedrock:Retrieve"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:*::foundation-model/anthropic.claude-*",
+                "arn:aws:bedrock:*:*:knowledge-base/*"
+            ]
+        },
+        {
+            "Sid": "BedrockListModels",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:ListFoundationModels"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
