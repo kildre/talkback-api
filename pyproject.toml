@@ -1,7 +1,7 @@
 [project]
-name = "chitchat-api"
+name = "talkback-api"
 version = "1.0.0"
-description = "Python Fast API for the ChitChat Starter App"
+description = "Python Fast API for the TalkBack Starter App"
 readme = "README.md"
 license = {file = "LICENSE.md"}
 dependencies = [
