@@ -1,8 +1,11 @@
 """Chat Pydantic schemas for request/response validation."""
 
-from datetime import datetime
+from __future__ import annotations
 
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 
 class MessageBase(BaseModel):
@@ -59,8 +62,39 @@ class ChatWithMessages(ChatResponse):
     messages: list[MessageResponse] = []
 
 
-class ChatRequest(BaseModel):
-    """Schema for chat request with message."""
+class ImageContent(BaseModel):
+    """Schema for image content in a message."""
 
-    message: str
+    type: Literal["image"] = "image"
+    format: str  # jpeg, png, gif, webp
+    source: dict  # {"bytes": base64_string} or {"s3Location": {"uri": "..."}}
+
+    class Config:
+        extra = "allow"
+
+
+class DocumentContent(BaseModel):
+    """Schema for document content in a message."""
+
+    type: Literal["document"] = "document"
+    format: str  # pdf, csv, doc, docx, xls, xlsx, html, txt, md
+    name: str
+    source: dict  # {"bytes": base64_string} or {"s3Location": {"uri": "..."}}
+
+    class Config:
+        extra = "allow"
+
+
+class ChatRequest(BaseModel):
+    """Schema for chat request with message and optional images/documents."""
+
+    message: str = Field(
+        ..., min_length=1, description="The message text (required, non-empty)"
+    )
     chat_id: int | None = None
+    images: list[ImageContent] | None = None
+    documents: list[DocumentContent] | None = None
+    enable_tools: bool = True  # Allow per-request tool control
+
+    class Config:
+        extra = "ignore"

@@ -1,7 +1,6 @@
 import requests
 from fastapi import Depends, HTTPException
 from jose import jwt
-from jose.backends import RSAKey
 
 from app.config import settings
 
@@ -24,9 +23,7 @@ def validate_jwt(token: str = Depends(get_keycloak_jwks)):
     rsa_key = None
     for key in jwks:
         if key["kid"] == header["kid"]:
-            rsa_key = RSAKey(
-                key=key["n"], alg=key["alg"], use=key["use"], kid=key["kid"]
-            )
+            rsa_key = key
             break
 
     if rsa_key is None:

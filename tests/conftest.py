@@ -15,8 +15,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.admin.router import router as admin_router
 from app.applicants.router import router as applicants_router
 from app.cases.router import router as cases_router
+from app.chat.router import router as chat_router
 from app.db import Base, get_db
 from app.health.router import router as health_router
+from app.tts.router import router as tts_router
 from app.users.router import router as users_router
 
 
@@ -27,6 +29,8 @@ def start_application():
     app.include_router(users_router)
     app.include_router(admin_router)
     app.include_router(health_router)
+    app.include_router(chat_router)
+    app.include_router(tts_router)
     return app
 
 
