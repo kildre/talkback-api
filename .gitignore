@@ -156,3 +156,8 @@ cython_debug/
 db.sqlite3
 db.test.sqlite3
 .DS_STORE
+
+# Google Cloud service account keys
+*-servicekey.json
+text-to-speech.json
+talktalk-servicekey.json
