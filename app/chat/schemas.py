@@ -21,12 +21,23 @@ class MessageCreate(MessageBase):
     chat_id: int
 
 
+class VoiceSettings(BaseModel):
+    """Schema for voice settings."""
+
+    voice: str = "en-GB-Neural2-B"
+    speed: float = 3.0
+    pitch: float = 5.0
+
+
 class MessageResponse(MessageBase):
     """Schema for message response."""
 
     id: int
     chat_id: int
     created_at: datetime
+    voice_settings: VoiceSettings | None = Field(
+        default_factory=lambda: VoiceSettings(), description="Voice settings for TTS"
+    )
 
     class Config:
         from_attributes = True

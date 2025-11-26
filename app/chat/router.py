@@ -565,7 +565,13 @@ async def chat(
         )
         ai_message_response = chat_service.create_message(ai_message)
 
-        return ai_message_response
+        # Add voice settings to the response
+        from app.chat.schemas import VoiceSettings
+
+        response_dict = ai_message_response.model_dump()
+        response_dict["voice_settings"] = VoiceSettings().model_dump()
+
+        return MessageResponse(**response_dict)
 
     except HTTPException:
         raise

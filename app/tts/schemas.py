@@ -18,7 +18,7 @@ class TTSRequest(BaseModel):
         description="Speaking rate (0.25 to 4.0)",
     )
     pitch: float = Field(
-        default=-2.0,
+        default=15.0,
         ge=-20.0,
         le=20.0,
         description="Voice pitch (-20.0 to 20.0)",

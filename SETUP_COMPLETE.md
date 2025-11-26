@@ -134,7 +134,7 @@ POST /tts/
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure`
 
 ```
 talkback-api/
