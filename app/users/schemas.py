@@ -4,21 +4,15 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 # Pydantic Models
-class UserBase(BaseModel):
-    user_id: str = Field(..., min_length=1, max_length=100)
+
+
+# Only require fields that the frontend provides for registration
+class UserCreate(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=100)
     last_name: str = Field(..., min_length=1, max_length=100)
-    display_name: str = Field(..., min_length=1, max_length=200)
     email: str = Field(..., min_length=1, max_length=254)
-    is_active: bool = True
-    created_by: str = Field(..., min_length=1, max_length=100)
-    modified_by: str = Field(..., min_length=1, max_length=100)
-
-
-class UserCreate(UserBase):
-    hashed_password: str | None = None
+    password: str = Field(..., min_length=1)
 
 
 class UserUpdate(BaseModel):
@@ -31,11 +25,19 @@ class UserUpdate(BaseModel):
     modified_by: str | None = Field(None, min_length=1, max_length=100)
 
 
-class UserResponse(UserBase):
-    model_config = ConfigDict(from_attributes=True)
+class UserResponse(BaseModel):
     id: int
+    user_id: str
+    first_name: str
+    last_name: str
+    display_name: str
+    email: str
+    is_active: bool
+    created_by: str
+    modified_by: str
     created: datetime
     modified: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserListResponse(BaseModel):
@@ -44,3 +46,10 @@ class UserListResponse(BaseModel):
     page_count: int = 0
     prev_page: int | None = None
     next_page: int | None = None
+
+
+class UserRegistrationResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    first_name: str
+    user_id: str

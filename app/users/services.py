@@ -20,13 +20,29 @@ def get_items(db: Session, page_number: int, page_size: int):
 
 
 def create_item(db: Session, item: UserCreate):
-    db_item = DBUser(**item.model_dump(exclude={"hashed_password"}))
-    if item.hashed_password:
-        db_item.hashed_password = item.hashed_password
+    import uuid
+
+    # Autogenerate fields
+    user_id = str(uuid.uuid4())
+    display_name = f"{item.first_name} {item.last_name}"
+    created_by = item.email
+    modified_by = item.email
+    hashed_password = item.password  # You should hash this in production!
+
+    db_item = DBUser(
+        user_id=user_id,
+        first_name=item.first_name,
+        last_name=item.last_name,
+        display_name=display_name,
+        email=item.email,
+        hashed_password=hashed_password,
+        is_active=True,
+        created_by=created_by,
+        modified_by=modified_by,
+    )
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
-
     return db_item
 
 

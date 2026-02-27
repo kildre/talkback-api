@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 CHAT_NOT_FOUND_MSG = "Chat not found"
-DEFAULT_MODEL_ARN = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+DEFAULT_MODEL_ARN = "us.anthropic.claude-sonnet-4-6"
 DEMO_USER_ID = "demo-user"
 
 router = APIRouter(
@@ -96,12 +96,11 @@ async def handle_tool_calling(
 
             # Call Claude with tools
             response = bedrock_runtime.converse(
-                modelId="anthropic.claude-3-5-sonnet-20241022-v2:0",
+                modelId=DEFAULT_MODEL_ARN,
                 messages=messages,
                 toolConfig={"tools": tools},
                 inferenceConfig={
                     "temperature": 0.7,
-                    "topP": 0.9,
                     "maxTokens": 2048,
                 },
             )
@@ -230,7 +229,6 @@ async def handle_knowledge_base_query(message: str, bedrock_client: Any) -> str:
                         "inferenceConfig": {
                             "textInferenceConfig": {
                                 "temperature": 0.7,
-                                "topP": 0.9,
                                 "maxTokens": 2048,
                             }
                         },
@@ -307,12 +305,9 @@ async def chat(
             # Create new chat
             from app.chat.schemas import ChatCreate
 
-            # Create a title from the message (truncate if too long)
-            title = (
-                request.message[:50] + "..."
-                if len(request.message) > 50
-                else request.message
-            )
+            # Generate a meaningful title using AI
+            title = chat_service.generate_chat_title(request.message)
+            logger.info(f"Generated chat title: {title}")
 
             chat_data = ChatCreate(
                 title=title,
@@ -320,6 +315,9 @@ async def chat(
             )
             chat_response = chat_service.create_chat(chat_data)
             request.chat_id = chat_response.id
+            logger.info(
+                f"Created new chat with ID: {chat_response.id} and title: {title}"
+            )
 
         # Store user message
         from app.chat.schemas import MessageCreate
@@ -386,18 +384,13 @@ async def chat(
                     bedrock_runtime = session.client("bedrock-runtime")
 
                     # Use Converse API with multimodal support
-                    model_id = (
-                        "anthropic.claude-3-5-sonnet-20241022-v2:0"
-                        if has_images or has_documents
-                        else DEFAULT_MODEL_ARN
-                    )
+                    model_id = DEFAULT_MODEL_ARN
 
                     response = bedrock_runtime.converse(
                         modelId=model_id,
                         messages=[{"role": "user", "content": message_content}],
                         inferenceConfig={
                             "temperature": 0.7,
-                            "topP": 0.9,
                             "maxTokens": 2048,
                         },
                     )
@@ -488,7 +481,6 @@ async def chat(
                                 "inferenceConfig": {
                                     "textInferenceConfig": {
                                         "temperature": 0.7,
-                                        "topP": 0.9,
                                         "maxTokens": 2048,
                                     }
                                 },
