@@ -38,7 +38,7 @@ class TestAdminEndpoints:
     def test_get_current_user_without_token(self, client):
         """Test getting current user without authentication token."""
         response = client.get("/admin/current-user")
-        assert response.status_code == 403  # Forbidden without auth
+        assert response.status_code == 401
 
     def test_get_current_user_invalid_token(self, app, db_session):
         """Test getting current user with invalid JWT."""
@@ -86,7 +86,7 @@ class TestAdminEndpoints:
             "/admin/current-user",
             headers={"Authorization": "InvalidFormat"},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_get_current_user_partial_claims(self, app, db_session):
         """Test getting current user with partial JWT claims."""

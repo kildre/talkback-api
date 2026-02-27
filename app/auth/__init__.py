@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def validate_jwt(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
@@ -9,6 +9,8 @@ def validate_jwt(credentials: HTTPAuthorizationCredentials = Depends(security)) 
     Validate JWT token (dummy implementation for now).
     In production, decode and verify the JWT token properly.
     """
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
     token = credentials.credentials
     if not token or not token.startswith("fake-jwt-token-for-"):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
