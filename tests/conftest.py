@@ -35,9 +35,7 @@ def start_application():
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./db.test.sqlite3"
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 # Use connect_args parameter only with sqlite
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

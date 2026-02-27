@@ -56,7 +56,7 @@ def get_chat_service(db: Annotated[Session, Depends(get_db)]) -> ChatService:
     return ChatService(db)
 
 
-async def handle_tool_calling(
+async def handle_tool_calling(  # noqa: C901
     message: str, chat_service: ChatService, db: Session
 ) -> str:
     """
@@ -123,9 +123,7 @@ async def handle_tool_calling(
                         tool_input = tool_use["input"]
                         tool_use_id = tool_use["toolUseId"]
 
-                        logger.info(
-                            "Executing tool: %s with input: %s", tool_name, tool_input
-                        )
+                        logger.info("Executing tool: %s with input: %s", tool_name, tool_input)
 
                         # Execute tool
                         result = tool_executor.execute(tool_name, tool_input)
@@ -273,7 +271,7 @@ async def handle_knowledge_base_query(message: str, bedrock_client: Any) -> str:
 
 
 @router.post("/", response_model=MessageResponse)
-async def chat(
+async def chat(  # noqa: C901
     request: ChatRequest,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],
     db: Annotated[Session, Depends(get_db)],
@@ -307,7 +305,7 @@ async def chat(
 
             # Generate a meaningful title using AI
             title = chat_service.generate_chat_title(request.message)
-            logger.info(f"Generated chat title: {title}")
+            logger.info("Generated chat title: %s", title)
 
             chat_data = ChatCreate(
                 title=title,
@@ -315,9 +313,7 @@ async def chat(
             )
             chat_response = chat_service.create_chat(chat_data)
             request.chat_id = chat_response.id
-            logger.info(
-                f"Created new chat with ID: {chat_response.id} and title: {title}"
-            )
+            logger.info("Created new chat with ID: %s and title: %s", chat_response.id, title)
 
         # Store user message
         from app.chat.schemas import MessageCreate
@@ -411,23 +407,18 @@ async def chat(
                 except Exception as e:
                     logger.error("Unexpected error with multimodal content: %s", e)
                     ai_response_text = (
-                        "I'm sorry, something went wrong processing "
-                        f"the content. Error: {str(e)}"
+                        f"I'm sorry, something went wrong processing the content. Error: {str(e)}"
                     )
             else:
                 # Use standard retrieveAndGenerate for text-only queries
                 # Check if tools are enabled for this request
                 tools_enabled = (
-                    request.enable_tools
-                    and settings.ENABLE_TOOLS
-                    and get_enabled_tools()
+                    request.enable_tools and settings.ENABLE_TOOLS and get_enabled_tools()
                 )
 
                 # If tools enabled, try tool calling first with Converse API
                 if tools_enabled:
-                    ai_response_text = await handle_tool_calling(
-                        request.message, chat_service, db
-                    )
+                    ai_response_text = await handle_tool_calling(request.message, chat_service, db)
                 else:
                     # Use Knowledge Base without tools
                     ai_response_text = await handle_knowledge_base_query(
@@ -513,8 +504,7 @@ async def chat(
                     retrieve_and_generate_params["retrieveAndGenerateConfiguration"] = {
                         "type": "EXTERNAL_SOURCES",
                         "externalSourcesConfiguration": {
-                            "modelArn": settings.AWS_BEDROCK_MODEL_ARN
-                            or DEFAULT_MODEL_ARN,
+                            "modelArn": settings.AWS_BEDROCK_MODEL_ARN or DEFAULT_MODEL_ARN,
                             "sources": [
                                 {
                                     "sourceType": "S3",
@@ -528,9 +518,7 @@ async def chat(
                     }
 
                 try:
-                    response = bedrock_client.retrieve_and_generate(
-                        **retrieve_and_generate_params
-                    )
+                    response = bedrock_client.retrieve_and_generate(**retrieve_and_generate_params)
                     ai_response_text = response.get("output", {}).get(
                         "text", "I'm sorry, I couldn't generate a response."
                     )

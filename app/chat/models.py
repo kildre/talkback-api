@@ -14,9 +14,7 @@ class Chat(Base):
     title = Column(String(255), nullable=False)
     user_id = Column(String(100), nullable=False, index=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
 
 class Message(Base):

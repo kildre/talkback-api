@@ -23,21 +23,17 @@ class ChatService:
 
     def generate_chat_title(self, message: str) -> str:
         """Generate a meaningful title for a chat based on the first message."""
-        logger.info(f"Attempting to generate title for message: {message[:100]}...")
+        logger.info("Attempting to generate title for message: %s...", message[:100])
 
         try:
             # Check if AWS credentials are configured
             if (
                 not settings.AWS_ACCESS_KEY_ID
-                or settings.AWS_ACCESS_KEY_ID
-                in ["1234", "REPLACE_WITH_YOUR_ACCESS_KEY_ID"]
+                or settings.AWS_ACCESS_KEY_ID in ["1234", "REPLACE_WITH_YOUR_ACCESS_KEY_ID"]
                 or not settings.AWS_SECRET_ACCESS_KEY
-                or settings.AWS_SECRET_ACCESS_KEY
-                in ["REPLACE_WITH_YOUR_SECRET_ACCESS_KEY"]
+                or settings.AWS_SECRET_ACCESS_KEY in ["REPLACE_WITH_YOUR_SECRET_ACCESS_KEY"]
             ):
-                logger.warning(
-                    "AWS credentials not configured, using truncated message"
-                )
+                logger.warning("AWS credentials not configured, using truncated message")
                 return message[:50] + "..." if len(message) > 50 else message
 
             session = boto3.Session(
@@ -48,11 +44,13 @@ class ChatService:
             bedrock_runtime = session.client("bedrock-runtime")
 
             # Use Claude to generate a concise title
-            prompt = f"""Generate a brief, meaningful title (3-6 words max) for a chat conversation that starts with this message:
-
-"{message}"
-
-Respond with ONLY the title, no quotes, no explanation, no punctuation at the end."""
+            prompt = (
+                "Generate a brief, meaningful title (3-6 words max) "
+                "for a chat conversation that starts with this message:\n\n"
+                f'"{message}"\n\n'
+                "Respond with ONLY the title, no quotes, no explanation, "
+                "no punctuation at the end."
+            )
 
             logger.info("Calling Claude API for title generation...")
             response = bedrock_runtime.converse(
@@ -72,12 +70,13 @@ Respond with ONLY the title, no quotes, no explanation, no punctuation at the en
                 .strip()
             )
 
-            logger.info(f"Claude returned title: {title}")
+            logger.info("Claude returned title: %s", title)
 
             # Fallback if Claude returns nothing or too long
             if not title or len(title) > 100:
                 logger.warning(
-                    f"Invalid title from Claude (empty or too long: {len(title) if title else 0} chars)"
+                    "Invalid title from Claude (empty or too long: %s chars)",
+                    len(title) if title else 0,
                 )
                 return message[:50] + "..." if len(message) > 50 else message
 
@@ -103,11 +102,7 @@ Respond with ONLY the title, no quotes, no explanation, no punctuation at the en
 
     def get_chat(self, chat_id: int, user_id: str) -> Chat | None:
         """Get a chat by ID for a specific user."""
-        return (
-            self.db.query(Chat)
-            .filter(Chat.id == chat_id, Chat.user_id == user_id)
-            .first()
-        )
+        return self.db.query(Chat).filter(Chat.id == chat_id, Chat.user_id == user_id).first()
 
     def get_user_chats(self, user_id: str) -> list[ChatResponse]:
         """Get all chats for a user."""

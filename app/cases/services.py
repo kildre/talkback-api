@@ -30,10 +30,7 @@ def create_item(db: Session, case: CaseCreate):
 
 def get_item(db: Session, case_id: int):
     case = (
-        db.query(DBCase)
-        .options(joinedload(DBCase.applicant))
-        .where(DBCase.id == case_id)
-        .first()
+        db.query(DBCase).options(joinedload(DBCase.applicant)).where(DBCase.id == case_id).first()
     )
 
     if case is None:

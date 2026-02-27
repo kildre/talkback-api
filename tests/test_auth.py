@@ -15,9 +15,7 @@ class TestAuthentication:
 
         # Mock the well-known config response
         well_known_response = MagicMock()
-        well_known_response.json.return_value = {
-            "jwks_uri": "https://keycloak.example.com/jwks"
-        }
+        well_known_response.json.return_value = {"jwks_uri": "https://keycloak.example.com/jwks"}
 
         # Mock the JWKS response
         jwks_response = MagicMock()
@@ -49,7 +47,7 @@ class TestAuthentication:
 
         mock_get.side_effect = Exception("Connection error")
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Connection error"):
             get_keycloak_jwks()
 
     @patch("app.auth.get_keycloak_jwks")
@@ -118,9 +116,7 @@ class TestAuthentication:
     @patch("app.auth.get_keycloak_jwks")
     @patch("app.auth.jwt.decode")
     @patch("app.auth.jwt.get_unverified_header")
-    def test_validate_jwt_invalid_token(
-        self, mock_get_header, mock_decode, mock_get_jwks
-    ):
+    def test_validate_jwt_invalid_token(self, mock_get_header, mock_decode, mock_get_jwks):
         """Test JWT validation with invalid token."""
         from fastapi import HTTPException
 

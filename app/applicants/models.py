@@ -22,9 +22,7 @@ class DBApplicant(Base):
     state = Column(String(50), nullable=True)
     zip = Column(String(10), nullable=True)
     country = Column(String(100), nullable=False)
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),

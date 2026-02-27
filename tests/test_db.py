@@ -1,5 +1,6 @@
 """Tests for database module."""
 
+import contextlib
 from unittest.mock import patch
 
 from sqlalchemy import create_engine
@@ -24,19 +25,15 @@ class TestDatabase:
 
         # Create a test database session
         test_engine = create_engine("sqlite:///:memory:")
-        TestSessionLocal = sessionmaker(
-            autocommit=False, autoflush=False, bind=test_engine
-        )
+        TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
         with patch("app.db.SessionLocal", TestSessionLocal):
             db_gen = get_db()
             db = next(db_gen)
             assert db is not None
             # Clean up
-            try:
+            with contextlib.suppress(StopIteration):
                 next(db_gen)
-            except StopIteration:
-                pass
 
     def test_database_base_model(self):
         """Test that Base is properly configured."""

@@ -36,9 +36,19 @@ exclude = [
     "docs",
     "__pycache",
     "**/migrations/*",
+    "TTS_ALTERNATIVE_IMPLEMENTATION.py",
+    "backend-google-tts-fastapi.py",
+    "config.py",
+    "find_kb_all_regions.py",
+    "find_kb_region.py",
+    "test_aws_setup.py",
+    "test_kb_connection.py",
+    "test_tools.py",
+    "test_tts.py",
+    "test_tts_quick.py",
 ]
 
-line-length = 88
+line-length = 100
 target-version = "py311"
 
 [tool.ruff.lint]

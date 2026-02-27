@@ -54,9 +54,7 @@ class TestConfiguration:
             assert settings.AWS_SECRET_ACCESS_KEY == "test-secret"
             assert settings.AWS_DEFAULT_REGION == "us-east-1"
             assert settings.AWS_BEDROCK_KNOWLEDGE_BASE_ID == "test-kb-id"
-            assert (
-                settings.AWS_BEDROCK_MODEL_ARN == "arn:aws:bedrock:us-east-1:model/test"
-            )
+            assert settings.AWS_BEDROCK_MODEL_ARN == "arn:aws:bedrock:us-east-1:model/test"
 
     def test_tool_configuration(self):
         """Test tool calling configuration."""
@@ -84,9 +82,7 @@ class TestConfiguration:
             },
         ):
             settings = Settings()
-            assert (
-                settings.GOOGLE_APPLICATION_CREDENTIALS == "/path/to/credentials.json"
-            )
+            assert settings.GOOGLE_APPLICATION_CREDENTIALS == "/path/to/credentials.json"
 
     def test_oidc_configuration(self):
         """Test OIDC configuration."""

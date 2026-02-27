@@ -35,19 +35,13 @@ async def create_applicant(applicant: ApplicantCreate, db: db_session):
     return db_applicant
 
 
-@router.get(
-    "/{applicant_id}", status_code=status.HTTP_200_OK, response_model=ApplicantResponse
-)
+@router.get("/{applicant_id}", status_code=status.HTTP_200_OK, response_model=ApplicantResponse)
 async def get_applicant(applicant_id: int, db: db_session):
     return service.get_item(db, applicant_id)
 
 
-@router.put(
-    "/{applicant_id}", status_code=status.HTTP_200_OK, response_model=ApplicantResponse
-)
-async def update_applicant(
-    applicant_id: int, applicant: ApplicantUpdate, db: db_session
-):
+@router.put("/{applicant_id}", status_code=status.HTTP_200_OK, response_model=ApplicantResponse)
+async def update_applicant(applicant_id: int, applicant: ApplicantUpdate, db: db_session):
     db_applicant = service.update_item(db, applicant_id, applicant)
     return db_applicant
 
