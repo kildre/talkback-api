@@ -13,9 +13,7 @@ def mock_bedrock_client():
     with patch("app.chat.router.get_bedrock_client") as mock:
         client = MagicMock()
         # Mock the retrieve_and_generate method to return a proper response
-        client.retrieve_and_generate.return_value = {
-            "output": {"text": "Mocked AI response"}
-        }
+        client.retrieve_and_generate.return_value = {"output": {"text": "Mocked AI response"}}
         mock.return_value = client
         yield client
 
@@ -306,9 +304,7 @@ class TestChatService:
         db_session.commit()
 
         service = ChatService(db_session)
-        message_data = MessageCreate(
-            chat_id=chat.id, role="user", content="Test message"
-        )
+        message_data = MessageCreate(chat_id=chat.id, role="user", content="Test message")
         message = service.create_message(message_data)
 
         assert message.chat_id == chat.id

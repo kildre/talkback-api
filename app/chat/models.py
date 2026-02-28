@@ -14,9 +14,7 @@ class Chat(Base):
     title = Column(String(255), nullable=False)
     user_id = Column(String(100), nullable=False, index=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
 
 class Message(Base):
@@ -25,7 +23,11 @@ class Message(Base):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    chat_id = Column(Integer, nullable=False, index=True)
+    from sqlalchemy import ForeignKey
+
+    chat_id = Column(
+        Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     role = Column(String(20), nullable=False)  # 'user', 'assistant', 'system'
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)

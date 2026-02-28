@@ -7,7 +7,13 @@ from starlette import status
 import app.users.services as service
 from app.config import settings
 from app.db import get_db
-from app.users.schemas import UserCreate, UserListResponse, UserResponse, UserUpdate
+from app.users.schemas import (
+    UserCreate,
+    UserListResponse,
+    UserRegistrationResponse,
+    UserResponse,
+    UserUpdate,
+)
 
 router = APIRouter(
     prefix=f"{settings.API_PREFIX}/users",
@@ -17,6 +23,26 @@ router = APIRouter(
 
 # Database dependency injection session
 db_session = Annotated[Session, Depends(get_db)]
+
+
+# Registration endpoint
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    response_model=UserRegistrationResponse,
+)
+async def register_user(item: UserCreate, db: db_session):
+    # Create the user
+    db_item = service.create_item(db, item)
+
+    # Generate JWT token for immediate login
+    from app.auth.router import create_jwt
+
+    token = create_jwt(db_item.user_id)
+
+    return UserRegistrationResponse(
+        access_token=token, first_name=db_item.first_name, user_id=db_item.user_id
+    )
 
 
 @router.get(

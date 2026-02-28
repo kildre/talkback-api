@@ -99,9 +99,7 @@ class DocumentContent(BaseModel):
 class ChatRequest(BaseModel):
     """Schema for chat request with message and optional images/documents."""
 
-    message: str = Field(
-        ..., min_length=1, description="The message text (required, non-empty)"
-    )
+    message: str = Field(..., min_length=1, description="The message text (required, non-empty)")
     chat_id: int | None = None
     images: list[ImageContent] | None = None
     documents: list[DocumentContent] | None = None

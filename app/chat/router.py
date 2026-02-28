@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 CHAT_NOT_FOUND_MSG = "Chat not found"
-DEFAULT_MODEL_ARN = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+DEFAULT_MODEL_ARN = "us.anthropic.claude-sonnet-4-6"
 DEMO_USER_ID = "demo-user"
 
 router = APIRouter(
@@ -56,7 +56,7 @@ def get_chat_service(db: Annotated[Session, Depends(get_db)]) -> ChatService:
     return ChatService(db)
 
 
-async def handle_tool_calling(
+async def handle_tool_calling(  # noqa: C901
     message: str, chat_service: ChatService, db: Session
 ) -> str:
     """
@@ -96,12 +96,11 @@ async def handle_tool_calling(
 
             # Call Claude with tools
             response = bedrock_runtime.converse(
-                modelId="anthropic.claude-3-5-sonnet-20241022-v2:0",
+                modelId=DEFAULT_MODEL_ARN,
                 messages=messages,
                 toolConfig={"tools": tools},
                 inferenceConfig={
                     "temperature": 0.7,
-                    "topP": 0.9,
                     "maxTokens": 2048,
                 },
             )
@@ -124,9 +123,7 @@ async def handle_tool_calling(
                         tool_input = tool_use["input"]
                         tool_use_id = tool_use["toolUseId"]
 
-                        logger.info(
-                            "Executing tool: %s with input: %s", tool_name, tool_input
-                        )
+                        logger.info("Executing tool: %s with input: %s", tool_name, tool_input)
 
                         # Execute tool
                         result = tool_executor.execute(tool_name, tool_input)
@@ -230,7 +227,6 @@ async def handle_knowledge_base_query(message: str, bedrock_client: Any) -> str:
                         "inferenceConfig": {
                             "textInferenceConfig": {
                                 "temperature": 0.7,
-                                "topP": 0.9,
                                 "maxTokens": 2048,
                             }
                         },
@@ -275,7 +271,7 @@ async def handle_knowledge_base_query(message: str, bedrock_client: Any) -> str:
 
 
 @router.post("/", response_model=MessageResponse)
-async def chat(
+async def chat(  # noqa: C901
     request: ChatRequest,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],
     db: Annotated[Session, Depends(get_db)],
@@ -307,12 +303,9 @@ async def chat(
             # Create new chat
             from app.chat.schemas import ChatCreate
 
-            # Create a title from the message (truncate if too long)
-            title = (
-                request.message[:50] + "..."
-                if len(request.message) > 50
-                else request.message
-            )
+            # Generate a meaningful title using AI
+            title = chat_service.generate_chat_title(request.message)
+            logger.info("Generated chat title: %s", title)
 
             chat_data = ChatCreate(
                 title=title,
@@ -320,6 +313,7 @@ async def chat(
             )
             chat_response = chat_service.create_chat(chat_data)
             request.chat_id = chat_response.id
+            logger.info("Created new chat with ID: %s and title: %s", chat_response.id, title)
 
         # Store user message
         from app.chat.schemas import MessageCreate
@@ -386,18 +380,13 @@ async def chat(
                     bedrock_runtime = session.client("bedrock-runtime")
 
                     # Use Converse API with multimodal support
-                    model_id = (
-                        "anthropic.claude-3-5-sonnet-20241022-v2:0"
-                        if has_images or has_documents
-                        else DEFAULT_MODEL_ARN
-                    )
+                    model_id = DEFAULT_MODEL_ARN
 
                     response = bedrock_runtime.converse(
                         modelId=model_id,
                         messages=[{"role": "user", "content": message_content}],
                         inferenceConfig={
                             "temperature": 0.7,
-                            "topP": 0.9,
                             "maxTokens": 2048,
                         },
                     )
@@ -418,23 +407,18 @@ async def chat(
                 except Exception as e:
                     logger.error("Unexpected error with multimodal content: %s", e)
                     ai_response_text = (
-                        "I'm sorry, something went wrong processing "
-                        f"the content. Error: {str(e)}"
+                        f"I'm sorry, something went wrong processing the content. Error: {str(e)}"
                     )
             else:
                 # Use standard retrieveAndGenerate for text-only queries
                 # Check if tools are enabled for this request
                 tools_enabled = (
-                    request.enable_tools
-                    and settings.ENABLE_TOOLS
-                    and get_enabled_tools()
+                    request.enable_tools and settings.ENABLE_TOOLS and get_enabled_tools()
                 )
 
                 # If tools enabled, try tool calling first with Converse API
                 if tools_enabled:
-                    ai_response_text = await handle_tool_calling(
-                        request.message, chat_service, db
-                    )
+                    ai_response_text = await handle_tool_calling(request.message, chat_service, db)
                 else:
                     # Use Knowledge Base without tools
                     ai_response_text = await handle_knowledge_base_query(
@@ -488,7 +472,6 @@ async def chat(
                                 "inferenceConfig": {
                                     "textInferenceConfig": {
                                         "temperature": 0.7,
-                                        "topP": 0.9,
                                         "maxTokens": 2048,
                                     }
                                 },
@@ -521,8 +504,7 @@ async def chat(
                     retrieve_and_generate_params["retrieveAndGenerateConfiguration"] = {
                         "type": "EXTERNAL_SOURCES",
                         "externalSourcesConfiguration": {
-                            "modelArn": settings.AWS_BEDROCK_MODEL_ARN
-                            or DEFAULT_MODEL_ARN,
+                            "modelArn": settings.AWS_BEDROCK_MODEL_ARN or DEFAULT_MODEL_ARN,
                             "sources": [
                                 {
                                     "sourceType": "S3",
@@ -536,9 +518,7 @@ async def chat(
                     }
 
                 try:
-                    response = bedrock_client.retrieve_and_generate(
-                        **retrieve_and_generate_params
-                    )
+                    response = bedrock_client.retrieve_and_generate(**retrieve_and_generate_params)
                     ai_response_text = response.get("output", {}).get(
                         "text", "I'm sorry, I couldn't generate a response."
                     )

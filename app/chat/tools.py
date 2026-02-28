@@ -26,7 +26,7 @@ TOOL_DEFINITIONS = [
             "properties": {
                 "timezone": {
                     "type": "string",
-                    "description": "Timezone (e.g., 'America/New_York'). Defaults to UTC.",
+                    "description": ("Timezone (e.g., 'America/New_York'). Defaults to UTC."),
                 }
             },
         },
@@ -43,7 +43,7 @@ TOOL_DEFINITIONS = [
             "properties": {
                 "expression": {
                     "type": "string",
-                    "description": "Mathematical expression to evaluate (e.g., '10 * 5 + 3')",
+                    "description": ("Mathematical expression to evaluate (e.g., '10 * 5 + 3')"),
                 }
             },
             "required": ["expression"],
@@ -162,7 +162,10 @@ class ToolExecutor:
             if not all(c in allowed_chars for c in expression):
                 return {
                     "success": False,
-                    "error": "Invalid characters in expression. Only numbers and basic operators allowed.",
+                    "error": (
+                        "Invalid characters in expression. "
+                        "Only numbers and basic operators allowed."
+                    ),
                 }
 
             # Evaluate safely

@@ -36,9 +36,7 @@ async def create_case(case: CaseCreate, db: db_session):
     return db_case
 
 
-@router.get(
-    "/{case_id}", status_code=status.HTTP_200_OK, response_model=CaseWithApplicant
-)
+@router.get("/{case_id}", status_code=status.HTTP_200_OK, response_model=CaseWithApplicant)
 async def get_case(case_id: int, db: db_session):
     return service.get_item(db, case_id)
 
